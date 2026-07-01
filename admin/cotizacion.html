@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cotizacion interna | Alumglass</title>
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="theme-color" content="#0b1f2a">
+    <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+  </head>
+  <body class="admin-page">
+    <main class="admin-shell" id="contenido">
+      <section class="admin-card" aria-labelledby="form-title">
+        <a class="brand admin-brand" href="../index.html">
+          <span class="brand-mark" aria-hidden="true">A</span>
+          <span><strong>Alumglass</strong><small>Cotizacion interna</small></span>
+        </a>
+        <div class="section-heading">
+          <p class="eyebrow">Ruta privada</p>
+          <h1 id="form-title">Formulario de cotizacion</h1>
+          <p>Esta vista esta preparada para colocarse detras de autenticacion real en produccion.</p>
+        </div>
+
+        <form class="quote-form" data-quote-form novalidate>
+          <div class="form-row">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" name="nombre" type="text" autocomplete="name" required minlength="2">
+            <small class="field-error" data-error-for="nombre"></small>
+          </div>
+          <div class="form-row">
+            <label for="telefono">Telefono</label>
+            <input id="telefono" name="telefono" type="tel" autocomplete="tel" required pattern="^[0-9+()\\s-]{8,20}$">
+            <small class="field-error" data-error-for="telefono"></small>
+          </div>
+          <div class="form-row">
+            <label for="correo">Correo</label>
+            <input id="correo" name="correo" type="email" autocomplete="email" required>
+            <small class="field-error" data-error-for="correo"></small>
+          </div>
+          <div class="form-row">
+            <label for="tipoTrabajo">Tipo de trabajo</label>
+            <select id="tipoTrabajo" name="tipoTrabajo" required>
+              <option value="">Selecciona una opcion</option>
+              <option>Puertas</option>
+              <option>Ventanas</option>
+              <option>Canceles</option>
+              <option>Barandales</option>
+              <option>Fachadas</option>
+              <option>Residencial</option>
+              <option>Comercial</option>
+              <option>Otro</option>
+            </select>
+            <small class="field-error" data-error-for="tipoTrabajo"></small>
+          </div>
+          <div class="form-row">
+            <label for="medidas">Medidas</label>
+            <input id="medidas" name="medidas" type="text" required placeholder="Ej. 1.20 m x 2.10 m">
+            <small class="field-error" data-error-for="medidas"></small>
+          </div>
+          <div class="form-row form-wide">
+            <label for="descripcion">Descripcion</label>
+            <textarea id="descripcion" name="descripcion" rows="5" required minlength="10"></textarea>
+            <small class="field-error" data-error-for="descripcion"></small>
+          </div>
+          <div class="form-row form-wide">
+            <label for="comentarios">Comentarios</label>
+            <textarea id="comentarios" name="comentarios" rows="4"></textarea>
+          </div>
+          <div class="form-actions form-wide">
+            <button class="btn btn-primary" type="submit">Preparar solicitud</button>
+            <p class="form-status" role="status" aria-live="polite" data-form-status></p>
+          </div>
+        </form>
+      </section>
+    </main>
+    <script src="../assets/js/quote-form.js" defer></script>
+  </body>
+</html>

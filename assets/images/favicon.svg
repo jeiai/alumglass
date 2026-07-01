@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Alumglass">
+  <rect width="64" height="64" rx="10" fill="#10212a"/>
+  <path d="M14 48 30 14h8l12 34h-8l-2.5-7.5h-14L22 48h-8Zm14.5-15h8.7L33 21l-4.5 12Z" fill="#ffffff"/>
+  <path d="M43 16h7v32h-7z" fill="#087f8c"/>
+</svg>
