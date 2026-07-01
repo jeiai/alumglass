@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cotizacion interna | Alumglass</title>
+    <title>Cotizador interno | Alumglass</title>
     <meta name="robots" content="noindex,nofollow">
     <meta name="theme-color" content="#0b1f2a">
     <link rel="icon" href="../assets/images/favicon.ico" sizes="any">
@@ -11,66 +11,161 @@
     <link rel="stylesheet" href="../assets/css/styles.css">
   </head>
   <body class="admin-page">
-    <main class="admin-shell" id="contenido">
+    <main class="admin-shell admin-shell-wide" id="contenido">
       <section class="admin-card" aria-labelledby="form-title">
         <a class="brand admin-brand" href="../index.html">
           <img class="brand-logo" src="../assets/images/logo-alumglass.png" alt="AlumGlass Aluminios y Vidrios" width="600" height="189">
         </a>
-        <div class="section-heading">
+        <div class="section-heading admin-heading">
           <p class="eyebrow">Ruta privada</p>
-          <h1 id="form-title">Formulario de cotizacion</h1>
-          <p>Esta vista esta preparada para colocarse detras de autenticacion real en produccion.</p>
+          <h1 id="form-title">Cotizador interno</h1>
+          <p>Calcula presupuestos con base en la hoja de Excel de Alumglass. Esta vista debe colocarse detras de autenticacion real en produccion.</p>
         </div>
 
-        <form class="quote-form" data-quote-form novalidate>
-          <div class="form-row">
-            <label for="nombre">Nombre</label>
-            <input id="nombre" name="nombre" type="text" autocomplete="name" required minlength="2">
-            <small class="field-error" data-error-for="nombre"></small>
-          </div>
-          <div class="form-row">
-            <label for="telefono">Telefono</label>
-            <input id="telefono" name="telefono" type="tel" autocomplete="tel" required pattern="^[0-9+()\\s-]{8,20}$">
-            <small class="field-error" data-error-for="telefono"></small>
-          </div>
-          <div class="form-row">
-            <label for="correo">Correo</label>
-            <input id="correo" name="correo" type="email" autocomplete="email" required>
-            <small class="field-error" data-error-for="correo"></small>
-          </div>
-          <div class="form-row">
-            <label for="tipoTrabajo">Tipo de trabajo</label>
-            <select id="tipoTrabajo" name="tipoTrabajo" required>
-              <option value="">Selecciona una opcion</option>
-              <option>Puertas</option>
-              <option>Ventanas</option>
-              <option>Canceles</option>
-              <option>Barandales</option>
-              <option>Fachadas</option>
-              <option>Residencial</option>
-              <option>Comercial</option>
-              <option>Otro</option>
-            </select>
-            <small class="field-error" data-error-for="tipoTrabajo"></small>
-          </div>
-          <div class="form-row">
-            <label for="medidas">Medidas</label>
-            <input id="medidas" name="medidas" type="text" required placeholder="Ej. 1.20 m x 2.10 m">
-            <small class="field-error" data-error-for="medidas"></small>
-          </div>
-          <div class="form-row form-wide">
-            <label for="descripcion">Descripcion</label>
-            <textarea id="descripcion" name="descripcion" rows="5" required minlength="10"></textarea>
-            <small class="field-error" data-error-for="descripcion"></small>
-          </div>
-          <div class="form-row form-wide">
-            <label for="comentarios">Comentarios</label>
-            <textarea id="comentarios" name="comentarios" rows="4"></textarea>
-          </div>
-          <div class="form-actions form-wide">
-            <button class="btn btn-primary" type="submit">Preparar solicitud</button>
-            <p class="form-status" role="status" aria-live="polite" data-form-status></p>
-          </div>
+        <form class="quote-form quote-form-admin" data-quote-form novalidate>
+          <section class="calculator-panel form-wide" aria-labelledby="cliente-title">
+            <div class="panel-heading">
+              <h2 id="cliente-title">Datos del cliente</h2>
+            </div>
+            <div class="admin-fields">
+              <div class="form-row">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" name="nombre" type="text" autocomplete="name" required minlength="2">
+                <small class="field-error" data-error-for="nombre"></small>
+              </div>
+              <div class="form-row">
+                <label for="telefono">Telefono</label>
+                <input id="telefono" name="telefono" type="tel" autocomplete="tel" required pattern="^[0-9+()\\s-]{8,20}$">
+                <small class="field-error" data-error-for="telefono"></small>
+              </div>
+              <div class="form-row">
+                <label for="correo">Correo</label>
+                <input id="correo" name="correo" type="email" autocomplete="email">
+                <small class="field-error" data-error-for="correo"></small>
+              </div>
+              <div class="form-row">
+                <label for="obra">Obra / ubicacion</label>
+                <input id="obra" name="obra" type="text" placeholder="Ej. Casa, local, colonia">
+              </div>
+            </div>
+          </section>
+
+          <section class="calculator-grid form-wide" aria-label="Calculadora">
+            <div class="calculator-panel">
+              <div class="panel-heading">
+                <h2>Partida</h2>
+                <p data-template-note>Selecciona un producto para ver su logica de calculo.</p>
+              </div>
+              <div class="admin-fields">
+                <div class="form-row form-wide">
+                  <label for="producto">Producto</label>
+                  <select id="producto" name="producto" required data-product-select>
+                    <option value="">Selecciona una plantilla</option>
+                  </select>
+                  <small class="field-error" data-error-for="producto"></small>
+                </div>
+                <div class="form-row">
+                  <label for="ancho">Ancho (cm)</label>
+                  <input id="ancho" name="ancho" type="number" min="1" step="0.1" value="100" required data-width-input>
+                  <small class="field-error" data-error-for="ancho"></small>
+                </div>
+                <div class="form-row">
+                  <label for="alto">Alto (cm)</label>
+                  <input id="alto" name="alto" type="number" min="1" step="0.1" value="100" required data-height-input>
+                  <small class="field-error" data-error-for="alto"></small>
+                </div>
+                <div class="form-row">
+                  <label for="cantidad">Cantidad</label>
+                  <input id="cantidad" name="cantidad" type="number" min="1" step="1" value="1" required data-quantity-input>
+                  <small class="field-error" data-error-for="cantidad"></small>
+                </div>
+                <div class="form-row">
+                  <label for="margen">Margen / mano de obra (%)</label>
+                  <input id="margen" name="margen" type="number" min="0" step="1" value="100" required data-markup-input>
+                  <small class="field-error" data-error-for="margen"></small>
+                </div>
+                <div class="form-row">
+                  <label for="herrajes">Herrajes ($)</label>
+                  <input id="herrajes" name="herrajes" type="number" min="0" step="1" value="0" data-hardware-input>
+                </div>
+                <label class="check-row">
+                  <input type="checkbox" name="incluirHerrajes" data-include-hardware>
+                  <span>Incluir herrajes en esta partida</span>
+                </label>
+                <div class="form-row form-wide">
+                  <label for="descripcion">Descripcion / notas</label>
+                  <textarea id="descripcion" name="descripcion" rows="3" placeholder="Color, vidrio, ubicacion, detalles de instalacion"></textarea>
+                </div>
+                <div class="form-actions form-wide calculator-actions">
+                  <button class="btn btn-primary" type="button" data-add-item>Agregar partida</button>
+                  <button class="btn btn-light" type="button" data-reset-item>Limpiar partida</button>
+                </div>
+              </div>
+            </div>
+
+            <aside class="calculator-panel quote-preview" aria-labelledby="preview-title">
+              <div class="panel-heading">
+                <h2 id="preview-title">Vista previa</h2>
+                <p data-preview-source>Basado en la plantilla seleccionada.</p>
+              </div>
+              <dl class="quote-totals">
+                <div><dt>Materiales</dt><dd data-preview-material>$0</dd></div>
+                <div><dt>Margen / mano de obra</dt><dd data-preview-labor>$0</dd></div>
+                <div><dt>Total partida</dt><dd data-preview-total>$0</dd></div>
+              </dl>
+              <div class="breakdown-table-wrap">
+                <table class="breakdown-table">
+                  <thead>
+                    <tr>
+                      <th>Material</th>
+                      <th>Medida</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody data-preview-breakdown>
+                    <tr><td colspan="3">Sin calculo todavia.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </aside>
+          </section>
+
+          <section class="calculator-panel form-wide" aria-labelledby="resumen-title">
+            <div class="panel-heading panel-heading-row">
+              <div>
+                <h2 id="resumen-title">Resumen de cotizacion</h2>
+                <p>Agrega una o varias partidas para preparar el presupuesto final.</p>
+              </div>
+              <strong class="grand-total" data-grand-total>$0</strong>
+            </div>
+            <div class="quote-items-wrap">
+              <table class="quote-items">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Medidas</th>
+                    <th>Cant.</th>
+                    <th>Material</th>
+                    <th>Total</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody data-items-table>
+                  <tr><td colspan="6">Aun no hay partidas agregadas.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="form-row form-wide">
+              <label for="comentarios">Comentarios finales</label>
+              <textarea id="comentarios" name="comentarios" rows="4"></textarea>
+            </div>
+            <div class="form-actions form-wide calculator-actions">
+              <button class="btn btn-primary" type="submit">Preparar cotizacion</button>
+              <button class="btn btn-light" type="button" data-copy-quote>Copiar resumen</button>
+              <button class="btn btn-light" type="button" data-clear-quote>Vaciar cotizacion</button>
+              <p class="form-status" role="status" aria-live="polite" data-form-status></p>
+            </div>
+          </section>
         </form>
       </section>
     </main>

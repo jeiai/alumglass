@@ -5,12 +5,12 @@ Sitio web empresarial estatico para captar clientes potenciales de trabajos de v
 ## Estructura
 
 - `index.html`: sitio publico con servicios, galeria, ubicacion, FAQ y llamadas a WhatsApp.
-- `admin/cotizacion.html`: formulario interno de cotizacion, sin enlace publico y con `noindex`.
+- `admin/cotizacion.html`: cotizador interno, sin enlace publico y con `noindex`.
 - `assets/css/styles.css`: estilos responsive, accesibles y listos para produccion.
 - `assets/js/main.js`: navegacion movil.
 - `assets/js/gallery-data.js`: datos generados de la galeria por categorias.
 - `assets/js/gallery.js`: filtros y visor de imagenes de la galeria.
-- `assets/js/quote-form.js`: validaciones y estructura preparada para conectar backend/correo.
+- `assets/js/quote-form.js`: logica del cotizador interno, validaciones, partidas y resumen preparado para conectar backend/correo.
 - `assets/images/`: favicon y hero local.
 - `assets/images/gallery/`: imagenes optimizadas de trabajos por categoria.
 - `tools/build_gallery.py`: script para regenerar la galeria desde un ZIP con carpetas por categoria.
@@ -50,7 +50,19 @@ El formulario interno no debe considerarse protegido por estar en una carpeta. E
 - backend con sesion/JWT,
 - o un panel privado separado.
 
-Cuando exista backend, cambia `sendQuote()` en `assets/js/quote-form.js` por un `fetch()` al endpoint real y valida nuevamente en servidor.
+Cuando exista backend, conecta el envio final de la cotizacion en `assets/js/quote-form.js` con un `fetch()` al endpoint real y valida nuevamente en servidor.
+
+## Cotizador interno
+
+El cotizador de `admin/cotizacion.html` toma como base el archivo de referencia `cotizacion.xlsx`. Incluye plantillas para:
+
+- ventana nacional 2 pulgadas,
+- ventana nacional 3 pulgadas,
+- ventana europea S1400,
+- puerta ligera 3 pulgadas,
+- ventana de proyeccion.
+
+Los calculos se hacen en centimetros, convierten perfiles a metros/tramos y aplican margen/mano de obra segun la plantilla original. Los precios de materiales estan en `assets/js/quote-form.js` para que puedan ajustarse facilmente.
 
 ## Checklist antes de publicar
 

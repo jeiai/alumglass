@@ -570,20 +570,28 @@ details p { margin: 10px 0 0; color: var(--muted); }
   margin: 0 auto;
   padding: 42px 0;
 }
+.admin-shell-wide {
+  width: min(1240px, calc(100% - 32px));
+}
 .admin-card {
   padding: clamp(20px, 5vw, 42px);
+  min-width: 0;
 }
 .admin-brand { margin-bottom: 32px; }
+.admin-heading {
+  margin-bottom: 24px;
+}
 .quote-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
-.form-row { display: grid; gap: 7px; }
+.form-row { display: grid; gap: 7px; min-width: 0; }
 .form-wide { grid-column: 1 / -1; }
 label { font-weight: 850; }
 input, select, textarea {
   width: 100%;
+  min-width: 0;
   border: 1px solid #bfcfd4;
   border-radius: var(--radius);
   padding: 12px 13px;
@@ -605,6 +613,153 @@ input:focus, select:focus, textarea:focus, .btn:focus-visible, a:focus-visible, 
 }
 .form-status.success { color: #087f45; }
 .form-status.error { color: #a3362d; }
+.quote-form-admin {
+  grid-template-columns: 1fr;
+  min-width: 0;
+}
+.calculator-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+  gap: 18px;
+  min-width: 0;
+}
+.calculator-panel {
+  padding: 22px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fbfdfd;
+}
+.panel-heading {
+  margin-bottom: 18px;
+}
+.panel-heading-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: start;
+}
+.panel-heading h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.panel-heading p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+.admin-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+.quote-form > .form-wide,
+.admin-fields > .form-row,
+.admin-fields > .form-wide {
+  width: 100%;
+  min-width: 0;
+}
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.check-row input {
+  width: 18px;
+  height: 18px;
+}
+.calculator-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.quote-preview {
+  position: sticky;
+  top: 94px;
+}
+.quote-totals {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 18px;
+}
+.quote-totals div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--white);
+  border: 1px solid var(--line);
+}
+.quote-totals dt {
+  color: var(--muted);
+}
+.quote-totals dd {
+  margin: 0;
+  font-weight: 900;
+}
+.breakdown-table-wrap,
+.quote-items-wrap {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.breakdown-table,
+.quote-items {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+.breakdown-table th,
+.breakdown-table td,
+.quote-items th,
+.quote-items td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.breakdown-table th,
+.quote-items th {
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+.breakdown-table td:last-child,
+.quote-items td:nth-child(4),
+.quote-items td:nth-child(5) {
+  text-align: right;
+}
+.quote-items small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+}
+.grand-total {
+  white-space: nowrap;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--teal);
+}
+.table-action {
+  border: 0;
+  color: #a3362d;
+  background: transparent;
+  font-weight: 850;
+  cursor: pointer;
+}
 
 @media (max-width: 860px) {
   .nav-toggle { display: block; }
@@ -622,8 +777,25 @@ input:focus, select:focus, textarea:focus, .btn:focus-visible, a:focus-visible, 
   }
   .nav-menu.is-open { display: flex; }
   .hero { min-height: 92vh; padding-top: 116px; }
-  .hero-proof, .services-grid, .intro-grid, .process-grid, .quote-grid, .location-grid, .faq-grid, .footer-grid, .quote-form {
-    grid-template-columns: 1fr;
+  .hero-proof, .services-grid, .intro-grid, .process-grid, .quote-grid, .location-grid, .faq-grid, .footer-grid, .quote-form, .calculator-grid, .admin-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .quote-preview {
+    position: static;
+  }
+  .breakdown-table,
+  .quote-items {
+    min-width: 0;
+  }
+  .breakdown-table th,
+  .breakdown-table td,
+  .quote-items th,
+  .quote-items td {
+    padding: 9px 8px;
+    font-size: 0.86rem;
+  }
+  .panel-heading-row {
+    display: grid;
   }
   .gallery-heading {
     display: grid;

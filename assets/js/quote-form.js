@@ -1,17 +1,230 @@
 const form = document.querySelector("[data-quote-form]");
 const statusNode = document.querySelector("[data-form-status]");
+const productSelect = document.querySelector("[data-product-select]");
+const widthInput = document.querySelector("[data-width-input]");
+const heightInput = document.querySelector("[data-height-input]");
+const quantityInput = document.querySelector("[data-quantity-input]");
+const markupInput = document.querySelector("[data-markup-input]");
+const hardwareInput = document.querySelector("[data-hardware-input]");
+const includeHardwareInput = document.querySelector("[data-include-hardware]");
+const addItemButton = document.querySelector("[data-add-item]");
+const resetItemButton = document.querySelector("[data-reset-item]");
+const copyQuoteButton = document.querySelector("[data-copy-quote]");
+const clearQuoteButton = document.querySelector("[data-clear-quote]");
+const previewMaterial = document.querySelector("[data-preview-material]");
+const previewLabor = document.querySelector("[data-preview-labor]");
+const previewTotal = document.querySelector("[data-preview-total]");
+const previewBreakdown = document.querySelector("[data-preview-breakdown]");
+const previewSource = document.querySelector("[data-preview-source]");
+const templateNote = document.querySelector("[data-template-note]");
+const itemsTable = document.querySelector("[data-items-table]");
+const grandTotalNode = document.querySelector("[data-grand-total]");
+
+const money = new Intl.NumberFormat("es-MX", {
+  style: "currency",
+  currency: "MXN",
+  maximumFractionDigits: 0
+});
 
 const messages = {
   valueMissing: "Este campo es obligatorio.",
   typeMismatch: "Revisa el formato de este dato.",
   patternMismatch: "Usa un telefono valido.",
+  rangeUnderflow: "Usa un valor mayor.",
   tooShort: "Agrega un poco mas de informacion."
+};
+
+const quoteItems = [];
+
+function positive(value) {
+  return Math.max(Number(value) || 0, 0);
+}
+
+function cmToMeters(value) {
+  return positive(value) / 100;
+}
+
+function profileLine(material, centimeters, barLengthMeters, unitCost) {
+  const meters = cmToMeters(centimeters);
+  const tramos = barLengthMeters ? meters / barLengthMeters : 0;
+  const cost = tramos * unitCost;
+  return { material, meters, tramos, unitCost, cost };
+}
+
+function directLine(material, quantity, unitCost, unitLabel = "pza") {
+  const amount = positive(quantity);
+  return {
+    material,
+    meters: amount,
+    tramos: amount,
+    unitCost,
+    unitLabel,
+    cost: amount * unitCost
+  };
+}
+
+function glassLine(material, squareMeters, unitCost) {
+  const meters = positive(squareMeters);
+  return {
+    material,
+    meters,
+    tramos: meters / 4.32,
+    unitCost,
+    unitLabel: "m2",
+    cost: meters * unitCost
+  };
+}
+
+function calculateWindowNational2({ width, height, includeHardware, hardware }) {
+  const fixedWidth = positive((width - 16) / 2);
+  const leafWidthTotal = fixedWidth * 2;
+  const cercoTotal = positive(height - 3) + positive(height - 4);
+  const jambaTotal = width + positive(height - 2) * 2;
+  const mosqVertical = positive(height - 2) * 2;
+  const mosqHorizontal = positive((width - 3) / 2) * 2;
+  const glassM2 = (width * height) / 10000;
+
+  const lines = [
+    profileLine("CABEZAL", leafWidthTotal, 6.1, 369),
+    profileLine("ZOCLO PUERTA", leafWidthTotal, 6.1, 678),
+    profileLine("CERCO 610", cercoTotal, 6.1, 345),
+    profileLine("TRASLAPE 460", cercoTotal, 6.1, 373),
+    profileLine("JAMBA C/MOSQ", jambaTotal, 6.1, 725),
+    profileLine("RIEL S/MOSQ", width, 6.1, 410),
+    profileLine("ADAPTADOR MOSQ", width, 6.1, 196),
+    profileLine("VERTICAL 460", mosqVertical, 4.6, 346),
+    profileLine("HORIZONTAL", mosqHorizontal, 6.1, 406),
+    glassLine("VIDRIO", glassM2, 400)
+  ];
+
+  if (includeHardware) lines.push(directLine("HERRAJES", 1, hardware || 500));
+  return lines;
+}
+
+function calculateWindowNational3({ width, height, includeHardware, hardware }) {
+  const fixedWidth = positive((width - 18) / 2);
+  const leafWidthTotal = fixedWidth * 2;
+  const cercoTotal = positive(height - 3) + positive(height - 4);
+  const jambaTotal = width + positive(height - 2) * 2;
+  const mosqVertical = positive(height - 2) * 2;
+  const mosqHorizontal = positive((width - 3) / 2) * 2;
+  const glassM2 = (width * height) / 10000;
+
+  const lines = [
+    profileLine("INTERMEDIO", leafWidthTotal, 6.1, 463),
+    profileLine("ZOCLO PUERTA", leafWidthTotal, 6.1, 890),
+    profileLine("CERCO", cercoTotal, 6.1, 611),
+    profileLine("TRASLAPE", cercoTotal, 6.1, 675),
+    profileLine("JAMBA C/MOSQ", jambaTotal, 6.1, 912),
+    profileLine("RIEL S/MOSQ", width, 6.1, 540),
+    profileLine("ADAPTADOR MOSQ", width, 6.1, 190),
+    profileLine("VERTICAL 610", mosqVertical, 6.1, 458),
+    profileLine("HORIZONTAL", mosqHorizontal, 6.1, 406),
+    glassLine("VIDRIO", glassM2, 400)
+  ];
+
+  if (includeHardware) lines.push(directLine("HERRAJES", 1, hardware || 500));
+  return lines;
+}
+
+function calculateEuropeanWindow({ width, height, includeHardware, hardware }) {
+  const glassM2 = (width * height) / 10000;
+  const lines = [
+    profileLine("HOJA PERIMETRAL", width * 2 + height * 4, 6, 1340),
+    profileLine("HOJA MOSQ", width + height * 2, 6, 1300),
+    profileLine("RIEL", width * 2 + height * 2, 6, 1540),
+    profileLine("TRASLAPE", height * 2, 6, 400),
+    glassLine("VIDRIO", glassM2, 350)
+  ];
+
+  if (includeHardware) lines.push(directLine("HERRAJE", 1, hardware || 1000));
+  return lines;
+}
+
+function calculateLightDoor({ width, height, includeHardware, hardware }) {
+  const batienteVertical = positive(height - 1.3);
+  const batienteHorizontal = width;
+  const cerco = positive(height - 2.8);
+  const zoclo = positive(width - 13.8);
+
+  const lines = [
+    profileLine("BATIENTE", batienteHorizontal + batienteVertical * 2, 6.1, 400),
+    profileLine("CERCO", cerco * 2, 4.5, 611),
+    profileLine("ZOCLO", zoclo * 3, 6.1, 890),
+    directLine("DUELA", (height / 12) * width / 610, 700, "pza")
+  ];
+
+  if (includeHardware) lines.push(directLine("HERRAJES", 1, hardware || 500));
+  return lines;
+}
+
+function calculateProjectionWindow({ width, height, includeHardware, hardware }) {
+  const frameWidth = positive(width - 5);
+  const frameHeight = positive(height - 5);
+  const glassM2 = (frameWidth * frameHeight) / 10000;
+  const lines = [
+    profileLine("MARCO OVALADO", frameWidth * 2 + frameHeight * 2, 6.1, 610),
+    profileLine("CONTRA MARCO #35", width * 2 + height * 2, 6.1, 590),
+    glassLine("VIDRIO / PLASTICO", glassM2, 350)
+  ];
+
+  if (includeHardware) lines.push(directLine("HERRAJES", 1, hardware || 700));
+  return lines;
+}
+
+const templates = {
+  nacional2: {
+    name: 'Ventana nacional 2"',
+    source: 'Hoja Excel: nacional 2"',
+    note: "Usa cabezal, zoclo, cerco, traslape, mosquitero y vidrio. Margen base del Excel: 100%.",
+    defaultMarkup: 100,
+    defaultHardware: 500,
+    includeHardwareDefault: false,
+    calculate: calculateWindowNational2
+  },
+  nacional3: {
+    name: 'Ventana nacional 3"',
+    source: 'Hoja Excel: nacional 3"',
+    note: "Usa perfiles de 3 pulgadas, mosquitero, vidrio y herraje fijo. Margen base del Excel: 100%.",
+    defaultMarkup: 100,
+    defaultHardware: 500,
+    includeHardwareDefault: true,
+    calculate: calculateWindowNational3
+  },
+  europea1400: {
+    name: "Ventana europea S1400",
+    source: "Hoja Excel: ventana europea s1400",
+    note: "Usa hoja perimetral, hoja mosquitero, riel, traslape, vidrio y herraje. Margen base del Excel: 85%.",
+    defaultMarkup: 85,
+    defaultHardware: 1000,
+    includeHardwareDefault: true,
+    calculate: calculateEuropeanWindow
+  },
+  puertaLigera3: {
+    name: 'Puerta ligera 3"',
+    source: 'Hoja Excel: puerta lijera s3"',
+    note: "Usa batiente, cerco, zoclo, duela y herrajes. El Excel duplica el subtotal como mano de obra/precio.",
+    defaultMarkup: 100,
+    defaultHardware: 500,
+    includeHardwareDefault: true,
+    calculate: calculateLightDoor
+  },
+  proyeccion: {
+    name: "Ventana de proyeccion",
+    source: "Hoja Excel: ventana proyeccion",
+    note: "Usa marco ovalado, contra marco, vidrio/plastico y herrajes. El Excel duplica el subtotal como mano de obra/precio.",
+    defaultMarkup: 100,
+    defaultHardware: 700,
+    includeHardwareDefault: true,
+    calculate: calculateProjectionWindow
+  }
 };
 
 function fieldMessage(field) {
   if (field.validity.valueMissing) return messages.valueMissing;
   if (field.validity.typeMismatch) return messages.typeMismatch;
   if (field.validity.patternMismatch) return messages.patternMismatch;
+  if (field.validity.rangeUnderflow) return messages.rangeUnderflow;
   if (field.validity.tooShort) return messages.tooShort;
   return "";
 }
@@ -24,48 +237,235 @@ function setFieldError(field) {
   return !message;
 }
 
-function serializeQuote(formElement) {
-  return Object.fromEntries(new FormData(formElement).entries());
+function currentInput() {
+  const template = templates[productSelect?.value];
+  const width = positive(widthInput?.value);
+  const height = positive(heightInput?.value);
+  const quantity = Math.max(parseInt(quantityInput?.value, 10) || 1, 1);
+  const markup = positive(markupInput?.value);
+  const includeHardware = Boolean(includeHardwareInput?.checked);
+  const hardware = positive(hardwareInput?.value);
+  return { template, width, height, quantity, markup, includeHardware, hardware };
 }
 
-async function sendQuote(payload) {
-  // Replace this with fetch("/api/quotes", { method: "POST", body: JSON.stringify(payload) })
-  // when the backend or email service endpoint is available.
-  await new Promise((resolve) => window.setTimeout(resolve, 450));
-  return { ok: true, payload };
+function calculateCurrent() {
+  const input = currentInput();
+  if (!input.template || !input.width || !input.height) return null;
+
+  const singleLines = input.template.calculate(input);
+  const singleMaterial = singleLines.reduce((sum, line) => sum + line.cost, 0);
+  const material = singleMaterial * input.quantity;
+  const labor = material * (input.markup / 100);
+  const total = material + labor;
+  const lines = singleLines.map((line) => ({
+    ...line,
+    meters: line.meters * input.quantity,
+    tramos: line.tramos * input.quantity,
+    cost: line.cost * input.quantity
+  }));
+
+  return { ...input, lines, material, labor, total };
+}
+
+function formatMeasure(line) {
+  if (line.unitLabel === "m2") return `${line.meters.toFixed(2)} m2`;
+  if (line.unitLabel === "pza") return `${line.tramos.toFixed(2)} pza`;
+  return `${line.meters.toFixed(2)} m / ${line.tramos.toFixed(2)} tramos`;
+}
+
+function renderPreview() {
+  const result = calculateCurrent();
+  if (!result) {
+    if (previewMaterial) previewMaterial.textContent = money.format(0);
+    if (previewLabor) previewLabor.textContent = money.format(0);
+    if (previewTotal) previewTotal.textContent = money.format(0);
+    if (previewBreakdown) previewBreakdown.innerHTML = '<tr><td colspan="3">Selecciona producto y medidas.</td></tr>';
+    if (previewSource) previewSource.textContent = "Basado en la plantilla seleccionada.";
+    if (templateNote) templateNote.textContent = "Selecciona un producto para ver su logica de calculo.";
+    return;
+  }
+
+  previewMaterial.textContent = money.format(result.material);
+  previewLabor.textContent = money.format(result.labor);
+  previewTotal.textContent = money.format(result.total);
+  previewSource.textContent = result.template.source;
+  templateNote.textContent = result.template.note;
+  previewBreakdown.innerHTML = result.lines
+    .map((line) => `
+      <tr>
+        <td>${line.material}</td>
+        <td>${formatMeasure(line)}</td>
+        <td>${money.format(line.cost)}</td>
+      </tr>
+    `)
+    .join("");
+}
+
+function renderItems() {
+  const total = quoteItems.reduce((sum, item) => sum + item.total, 0);
+  if (grandTotalNode) grandTotalNode.textContent = money.format(total);
+
+  if (!itemsTable) return;
+  if (!quoteItems.length) {
+    itemsTable.innerHTML = '<tr><td colspan="6">Aun no hay partidas agregadas.</td></tr>';
+    return;
+  }
+
+  itemsTable.innerHTML = quoteItems
+    .map((item, index) => `
+      <tr>
+        <td><strong>${item.template.name}</strong><small>${item.notes || ""}</small></td>
+        <td>${item.width} x ${item.height} cm</td>
+        <td>${item.quantity}</td>
+        <td>${money.format(item.material)}</td>
+        <td><strong>${money.format(item.total)}</strong></td>
+        <td><button class="table-action" type="button" data-remove-item="${index}">Quitar</button></td>
+      </tr>
+    `)
+    .join("");
+}
+
+function populateProducts() {
+  if (!productSelect) return;
+  productSelect.insertAdjacentHTML(
+    "beforeend",
+    Object.entries(templates)
+      .map(([id, template]) => `<option value="${id}">${template.name}</option>`)
+      .join("")
+  );
+}
+
+function applyTemplateDefaults() {
+  const template = templates[productSelect?.value];
+  if (!template) return;
+  if (markupInput) markupInput.value = template.defaultMarkup;
+  if (hardwareInput) hardwareInput.value = template.defaultHardware;
+  if (includeHardwareInput) includeHardwareInput.checked = template.includeHardwareDefault;
+}
+
+function resetItemForm() {
+  if (widthInput) widthInput.value = 100;
+  if (heightInput) heightInput.value = 100;
+  if (quantityInput) quantityInput.value = 1;
+  const template = templates[productSelect?.value];
+  if (template) applyTemplateDefaults();
+  renderPreview();
+}
+
+function addCurrentItem() {
+  const requiredFields = [productSelect, widthInput, heightInput, quantityInput, markupInput].filter(Boolean);
+  const isValid = requiredFields.map(setFieldError).every(Boolean);
+  const result = calculateCurrent();
+  if (!isValid || !result) {
+    statusNode.className = "form-status error";
+    statusNode.textContent = "Revisa producto, medidas, cantidad y margen antes de agregar.";
+    return;
+  }
+
+  quoteItems.push({
+    ...result,
+    notes: document.querySelector("#descripcion")?.value.trim() || ""
+  });
+  renderItems();
+  statusNode.className = "form-status success";
+  statusNode.textContent = "Partida agregada.";
+}
+
+function buildQuoteText() {
+  const data = Object.fromEntries(new FormData(form).entries());
+  const total = quoteItems.reduce((sum, item) => sum + item.total, 0);
+  const lines = quoteItems.map((item, index) => (
+    `${index + 1}. ${item.template.name} ${item.width} x ${item.height} cm, cant. ${item.quantity}: ${money.format(item.total)}`
+  ));
+
+  return [
+    "Cotizacion Alumglass",
+    `Cliente: ${data.nombre || ""}`,
+    `Telefono: ${data.telefono || ""}`,
+    data.correo ? `Correo: ${data.correo}` : "",
+    data.obra ? `Obra: ${data.obra}` : "",
+    "",
+    ...lines,
+    "",
+    `Total: ${money.format(total)}`,
+    data.comentarios ? `Comentarios: ${data.comentarios}` : ""
+  ].filter(Boolean).join("\n");
+}
+
+async function copyQuote() {
+  if (!quoteItems.length) {
+    statusNode.className = "form-status error";
+    statusNode.textContent = "Agrega al menos una partida para copiar el resumen.";
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(buildQuoteText());
+    statusNode.className = "form-status success";
+    statusNode.textContent = "Resumen copiado al portapapeles.";
+  } catch (error) {
+    statusNode.className = "form-status error";
+    statusNode.textContent = "No se pudo copiar automaticamente. Selecciona el resumen manualmente.";
+  }
+}
+
+function clearQuote() {
+  quoteItems.splice(0, quoteItems.length);
+  renderItems();
+  statusNode.className = "form-status success";
+  statusNode.textContent = "Cotizacion vaciada.";
+}
+
+function prepareQuote(event) {
+  event.preventDefault();
+  const requiredFields = Array.from(form.elements).filter((field) => field.required);
+  const isValid = requiredFields.map(setFieldError).every(Boolean);
+
+  if (!isValid) {
+    statusNode.className = "form-status error";
+    statusNode.textContent = "Revisa los campos obligatorios.";
+    return;
+  }
+
+  if (!quoteItems.length) {
+    statusNode.className = "form-status error";
+    statusNode.textContent = "Agrega al menos una partida a la cotizacion.";
+    return;
+  }
+
+  localStorage.setItem("alumglass-last-quote", buildQuoteText());
+  statusNode.className = "form-status success";
+  statusNode.textContent = "Cotizacion preparada y guardada localmente en este navegador.";
 }
 
 if (form && statusNode) {
+  populateProducts();
+  renderPreview();
+  renderItems();
+
   form.addEventListener("input", (event) => {
     if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement || event.target instanceof HTMLTextAreaElement) {
       setFieldError(event.target);
+      renderPreview();
     }
   });
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const fields = Array.from(form.elements).filter((field) => "validity" in field);
-    const isValid = fields.map(setFieldError).every(Boolean);
-
-    statusNode.className = "form-status";
-    statusNode.textContent = "";
-
-    if (!isValid) {
-      statusNode.classList.add("error");
-      statusNode.textContent = "Revisa los campos marcados antes de continuar.";
-      return;
-    }
-
-    try {
-      const response = await sendQuote(serializeQuote(form));
-      if (!response.ok) throw new Error("No se pudo preparar la solicitud.");
-      statusNode.classList.add("success");
-      statusNode.textContent = "Solicitud lista. Ya puede conectarse al backend o servicio de correo.";
-      form.reset();
-      fields.forEach((field) => field.removeAttribute("aria-invalid"));
-    } catch (error) {
-      statusNode.classList.add("error");
-      statusNode.textContent = "Ocurrio un error. Intenta nuevamente o revisa la conexion con el servicio.";
-    }
+  productSelect?.addEventListener("change", () => {
+    applyTemplateDefaults();
+    renderPreview();
   });
+
+  addItemButton?.addEventListener("click", addCurrentItem);
+  resetItemButton?.addEventListener("click", resetItemForm);
+  copyQuoteButton?.addEventListener("click", copyQuote);
+  clearQuoteButton?.addEventListener("click", clearQuote);
+
+  itemsTable?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-remove-item]");
+    if (!button) return;
+    quoteItems.splice(Number(button.dataset.removeItem), 1);
+    renderItems();
+  });
+
+  form.addEventListener("submit", prepareQuote);
 }
