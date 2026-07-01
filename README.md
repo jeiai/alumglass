@@ -8,8 +8,12 @@ Sitio web empresarial estatico para captar clientes potenciales de trabajos de v
 - `admin/cotizacion.html`: formulario interno de cotizacion, sin enlace publico y con `noindex`.
 - `assets/css/styles.css`: estilos responsive, accesibles y listos para produccion.
 - `assets/js/main.js`: navegacion movil.
+- `assets/js/gallery-data.js`: datos generados de la galeria por categorias.
+- `assets/js/gallery.js`: filtros y visor de imagenes de la galeria.
 - `assets/js/quote-form.js`: validaciones y estructura preparada para conectar backend/correo.
 - `assets/images/`: favicon y hero local.
+- `assets/images/gallery/`: imagenes optimizadas de trabajos por categoria.
+- `tools/build_gallery.py`: script para regenerar la galeria desde un ZIP con carpetas por categoria.
 - `robots.txt` y `sitemap.xml`: SEO tecnico basico.
 
 ## Correr localmente
@@ -24,6 +28,16 @@ Luego visita:
 
 - `http://127.0.0.1:4173/`
 - `http://127.0.0.1:4173/admin/cotizacion.html`
+
+## Regenerar galeria
+
+El ZIP debe tener una carpeta por categoria y sus imagenes dentro. Ejecuta:
+
+```powershell
+python tools\build_gallery.py "C:\ruta\galeria.zip" "C:\Users\CORE\Documents\alumglass"
+```
+
+El script crea imagenes `.webp` optimizadas en `assets/images/gallery/` y actualiza `assets/js/gallery-data.js`.
 
 ## Produccion
 

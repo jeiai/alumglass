@@ -146,24 +146,25 @@
 
       <section class="section" id="proyectos" aria-labelledby="proyectos-title">
         <div class="container">
-          <div class="section-heading">
-            <p class="eyebrow">Galeria</p>
-            <h2 id="proyectos-title">Proyectos y trabajos realizados</h2>
+          <div class="section-heading gallery-heading">
+            <div>
+              <p class="eyebrow">Galeria</p>
+              <h2 id="proyectos-title">Proyectos y trabajos realizados</h2>
+              <p>Explora trabajos reales por categoria. Cada imagen abre en vista ampliada para revisar acabados y detalles.</p>
+            </div>
+            <p class="gallery-total" data-gallery-total>149 imagenes</p>
           </div>
-          <div class="gallery-grid">
-            <article class="project-card project-large">
-              <img src="assets/images/hero-alumglass.png" alt="Fachada moderna con vidrio y aluminio" loading="lazy" width="900" height="600">
-              <div><h3>Fachadas y accesos</h3><p>Frentes limpios para negocio y hogar.</p></div>
-            </article>
-            <article class="project-card project-tone-a">
-              <div><h3>Ventanas a medida</h3><p>Perfiles de aluminio, vidrio claro y buena ventilacion.</p></div>
-            </article>
-            <article class="project-card project-tone-b">
-              <div><h3>Canceles de bano</h3><p>Soluciones funcionales para espacios compactos.</p></div>
-            </article>
-            <article class="project-card project-tone-c">
-              <div><h3>Barandales de cristal</h3><p>Acabados seguros con apariencia ligera.</p></div>
-            </article>
+          <div class="gallery-tabs" data-gallery-tabs aria-label="Categorias de trabajos"></div>
+          <div class="work-gallery" data-gallery-grid aria-live="polite"></div>
+          <div class="gallery-empty" data-gallery-empty hidden>No hay imagenes en esta categoria.</div>
+          <div class="lightbox" data-lightbox hidden>
+            <button class="lightbox-close" type="button" data-lightbox-close aria-label="Cerrar imagen ampliada">x</button>
+            <button class="lightbox-arrow lightbox-prev" type="button" data-lightbox-prev aria-label="Imagen anterior">&lt;</button>
+            <figure>
+              <img src="" alt="" data-lightbox-image>
+              <figcaption data-lightbox-caption></figcaption>
+            </figure>
+            <button class="lightbox-arrow lightbox-next" type="button" data-lightbox-next aria-label="Imagen siguiente">&gt;</button>
           </div>
         </div>
       </section>
@@ -245,6 +246,8 @@
     </footer>
 
     <a class="floating-whatsapp" href="https://wa.me/523513132925?text=Hola%20Alumglass%2C%20quiero%20cotizar%20un%20trabajo." target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">WA</a>
+    <script src="assets/js/gallery-data.js" defer></script>
+    <script src="assets/js/gallery.js" defer></script>
     <script src="assets/js/main.js" defer></script>
   </body>
 </html>
