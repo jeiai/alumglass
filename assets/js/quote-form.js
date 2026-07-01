@@ -10,6 +10,7 @@ const includeHardwareInput = document.querySelector("[data-include-hardware]");
 const addItemButton = document.querySelector("[data-add-item]");
 const resetItemButton = document.querySelector("[data-reset-item]");
 const copyQuoteButton = document.querySelector("[data-copy-quote]");
+const downloadPdfButton = document.querySelector("[data-download-pdf]");
 const clearQuoteButton = document.querySelector("[data-clear-quote]");
 const previewMaterial = document.querySelector("[data-preview-material]");
 const previewLabor = document.querySelector("[data-preview-labor]");
@@ -392,6 +393,205 @@ function buildQuoteText() {
   ].filter(Boolean).join("\n");
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function quoteDocumentHtml() {
+  const data = Object.fromEntries(new FormData(form).entries());
+  const total = quoteItems.reduce((sum, item) => sum + item.total, 0);
+  const today = new Date().toLocaleDateString("es-MX", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+  const logoUrl = new URL("../assets/images/logo-alumglass.png", window.location.href).href;
+
+  const rows = quoteItems.map((item, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td>
+        <strong>${escapeHtml(item.template.name)}</strong>
+        ${item.notes ? `<small>${escapeHtml(item.notes)}</small>` : ""}
+      </td>
+      <td>${escapeHtml(item.width)} x ${escapeHtml(item.height)} cm</td>
+      <td>${escapeHtml(item.quantity)}</td>
+      <td>${money.format(item.material)}</td>
+      <td>${money.format(item.labor)}</td>
+      <td><strong>${money.format(item.total)}</strong></td>
+    </tr>
+  `).join("");
+
+  return `<!doctype html>
+    <html lang="es-MX">
+      <head>
+        <meta charset="utf-8">
+        <title>Cotizacion Alumglass</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            padding: 28px;
+            color: #10212a;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.45;
+          }
+          header {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            align-items: flex-start;
+            padding-bottom: 18px;
+            border-bottom: 3px solid #087f8c;
+          }
+          .logo { width: 230px; height: auto; }
+          .company { text-align: right; font-size: 13px; color: #465962; }
+          h1 { margin: 24px 0 8px; font-size: 28px; }
+          h2 { margin: 0 0 10px; font-size: 15px; color: #087f8c; text-transform: uppercase; }
+          .meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 18px 0;
+          }
+          .box {
+            padding: 14px;
+            border: 1px solid #d9e3e6;
+            border-radius: 8px;
+          }
+          .box p { margin: 4px 0; }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 12px;
+          }
+          th, td {
+            padding: 9px 8px;
+            border-bottom: 1px solid #d9e3e6;
+            vertical-align: top;
+            text-align: left;
+          }
+          th {
+            color: #465962;
+            background: #edf3f4;
+            text-transform: uppercase;
+            font-size: 11px;
+          }
+          td:nth-child(4),
+          td:nth-child(5),
+          td:nth-child(6),
+          td:nth-child(7) { text-align: right; }
+          small { display: block; margin-top: 3px; color: #5d6b72; }
+          .total {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 22px;
+            font-size: 24px;
+            font-weight: 800;
+            color: #087f8c;
+          }
+          .notes {
+            margin-top: 22px;
+            padding-top: 14px;
+            border-top: 1px solid #d9e3e6;
+            color: #465962;
+          }
+          @page { margin: 14mm; }
+          @media print {
+            body { padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <header>
+          <img class="logo" src="${logoUrl}" alt="AlumGlass Aluminios y Vidrios">
+          <div class="company">
+            <strong>Alumglass</strong><br>
+            Aluminios y vidrios<br>
+            Cel / WhatsApp: +52 351 313 2925<br>
+            Calle Salamanca 138, Santa Ana Pacueco, Guanajuato
+          </div>
+        </header>
+
+        <h1>Cotizacion</h1>
+        <div class="meta">
+          <section class="box">
+            <h2>Cliente</h2>
+            <p><strong>Nombre:</strong> ${escapeHtml(data.nombre || "Sin nombre")}</p>
+            <p><strong>Telefono:</strong> ${escapeHtml(data.telefono || "Sin telefono")}</p>
+            <p><strong>Correo:</strong> ${escapeHtml(data.correo || "No indicado")}</p>
+            <p><strong>Obra:</strong> ${escapeHtml(data.obra || "No indicada")}</p>
+          </section>
+          <section class="box">
+            <h2>Datos de cotizacion</h2>
+            <p><strong>Fecha:</strong> ${escapeHtml(today)}</p>
+            <p><strong>Contacto Alumglass:</strong> +52 351 313 2925</p>
+            <p><strong>WhatsApp:</strong> +52 351 313 2925</p>
+          </section>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Producto</th>
+              <th>Medidas</th>
+              <th>Cant.</th>
+              <th>Material</th>
+              <th>Mano de obra</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+
+        <div class="total">Total: ${money.format(total)}</div>
+        ${data.comentarios ? `<div class="notes"><strong>Comentarios:</strong><br>${escapeHtml(data.comentarios).replaceAll("\n", "<br>")}</div>` : ""}
+      </body>
+    </html>`;
+}
+
+function downloadQuotePdf() {
+  const requiredFields = Array.from(form.elements).filter((field) => field.required);
+  const isValid = requiredFields.map(setFieldError).every(Boolean);
+
+  if (!isValid) {
+    statusNode.className = "form-status error";
+    statusNode.textContent = "Revisa los campos obligatorios antes de generar el PDF.";
+    return;
+  }
+
+  if (!quoteItems.length) {
+    statusNode.className = "form-status error";
+    statusNode.textContent = "Agrega al menos una partida para descargar el PDF.";
+    return;
+  }
+
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    statusNode.className = "form-status error";
+    statusNode.textContent = "El navegador bloqueo la ventana del PDF. Permite ventanas emergentes para este sitio.";
+    return;
+  }
+
+  printWindow.document.open();
+  printWindow.document.write(quoteDocumentHtml());
+  printWindow.document.close();
+  printWindow.addEventListener("load", () => {
+    printWindow.focus();
+    printWindow.print();
+  });
+
+  statusNode.className = "form-status success";
+  statusNode.textContent = "Se abrio la cotizacion para guardarla como PDF.";
+}
+
 async function copyQuote() {
   if (!quoteItems.length) {
     statusNode.className = "form-status error";
@@ -458,6 +658,7 @@ if (form && statusNode) {
   addItemButton?.addEventListener("click", addCurrentItem);
   resetItemButton?.addEventListener("click", resetItemForm);
   copyQuoteButton?.addEventListener("click", copyQuote);
+  downloadPdfButton?.addEventListener("click", downloadQuotePdf);
   clearQuoteButton?.addEventListener("click", clearQuote);
 
   itemsTable?.addEventListener("click", (event) => {
