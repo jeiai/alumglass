@@ -19,7 +19,7 @@
         <div class="section-heading admin-heading">
           <p class="eyebrow">Ruta privada</p>
           <h1 id="form-title">Cotizador interno</h1>
-          <p>Calcula presupuestos con base en la hoja de Excel de Alumglass. Esta vista debe colocarse detras de autenticacion real en produccion.</p>
+          <p>Calcula presupuestos con base en la hoja de Excel de Alumglass. Esta vista debe colocarse detrás de autenticación real en producción.</p>
         </div>
 
         <form class="quote-form quote-form-admin" data-quote-form novalidate>
@@ -34,7 +34,7 @@
                 <small class="field-error" data-error-for="nombre"></small>
               </div>
               <div class="form-row">
-                <label for="telefono">Telefono</label>
+                <label for="telefono">Teléfono</label>
                 <input id="telefono" name="telefono" type="tel" autocomplete="tel" required pattern="^[0-9+()\\s-]{8,20}$">
                 <small class="field-error" data-error-for="telefono"></small>
               </div>
@@ -44,7 +44,7 @@
                 <small class="field-error" data-error-for="correo"></small>
               </div>
               <div class="form-row">
-                <label for="obra">Obra / ubicacion</label>
+                <label for="obra">Obra / ubicación</label>
                 <input id="obra" name="obra" type="text" placeholder="Ej. Casa, local, colonia">
               </div>
             </div>
@@ -54,7 +54,7 @@
             <div class="calculator-panel">
               <div class="panel-heading">
                 <h2>Partida</h2>
-                <p data-template-note>Selecciona un producto para ver su logica de calculo.</p>
+                <p data-template-note>Selecciona un producto para ver su lógica de cálculo.</p>
               </div>
               <div class="admin-fields">
                 <div class="form-row form-wide">
@@ -93,8 +93,8 @@
                   <span>Incluir herrajes en esta partida</span>
                 </label>
                 <div class="form-row form-wide">
-                  <label for="descripcion">Descripcion / notas</label>
-                  <textarea id="descripcion" name="descripcion" rows="3" placeholder="Color, vidrio, ubicacion, detalles de instalacion"></textarea>
+                  <label for="descripcion">Descripción / notas</label>
+                  <textarea id="descripcion" name="descripcion" rows="3" placeholder="Color, vidrio, ubicación, detalles de instalación"></textarea>
                 </div>
                 <div class="form-actions form-wide calculator-actions">
                   <button class="btn btn-primary" type="button" data-add-item>Agregar partida</button>
@@ -123,7 +123,7 @@
                     </tr>
                   </thead>
                   <tbody data-preview-breakdown>
-                    <tr><td colspan="3">Sin calculo todavia.</td></tr>
+                    <tr><td colspan="3">Sin cálculo todavía.</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -133,7 +133,7 @@
           <section class="calculator-panel form-wide" aria-labelledby="resumen-title">
             <div class="panel-heading panel-heading-row">
               <div>
-                <h2 id="resumen-title">Resumen de cotizacion</h2>
+                <h2 id="resumen-title">Resumen de cotización</h2>
                 <p>Agrega una o varias partidas para preparar el presupuesto final.</p>
               </div>
               <strong class="grand-total" data-grand-total>$0</strong>
@@ -160,10 +160,10 @@
               <textarea id="comentarios" name="comentarios" rows="4"></textarea>
             </div>
             <div class="form-actions form-wide calculator-actions">
-              <button class="btn btn-primary" type="submit">Preparar cotizacion</button>
+              <button class="btn btn-primary" type="submit">Preparar cotización</button>
               <button class="btn btn-light" type="button" data-copy-quote>Copiar resumen</button>
               <button class="btn btn-light" type="button" data-download-pdf>Descargar PDF</button>
-              <button class="btn btn-light" type="button" data-clear-quote>Vaciar cotizacion</button>
+              <button class="btn btn-light" type="button" data-clear-quote>Vaciar cotización</button>
               <p class="form-status" role="status" aria-live="polite" data-form-status></p>
             </div>
           </section>

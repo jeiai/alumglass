@@ -27,7 +27,7 @@ function setTotal() {
   if (!totalNode) return;
   const total = allImages().length;
   const categories = galleryData.length;
-  totalNode.textContent = `${total} imagenes · ${categories} categorias`;
+  totalNode.textContent = `${total} imágenes · ${categories} categorías`;
 }
 
 function renderTabs() {

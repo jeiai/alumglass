@@ -30,7 +30,7 @@ const money = new Intl.NumberFormat("es-MX", {
 const messages = {
   valueMissing: "Este campo es obligatorio.",
   typeMismatch: "Revisa el formato de este dato.",
-  patternMismatch: "Usa un telefono valido.",
+  patternMismatch: "Usa un teléfono válido.",
   rangeUnderflow: "Usa un valor mayor.",
   tooShort: "Agrega un poco mas de informacion."
 };
@@ -203,7 +203,7 @@ const templates = {
   },
   puertaLigera3: {
     name: 'Puerta ligera 3"',
-    source: 'Hoja Excel: puerta lijera s3"',
+    source: 'Hoja Excel: puerta ligera s3"',
     note: "Usa batiente, cerco, zoclo, duela y herrajes. El Excel duplica el subtotal como mano de obra/precio.",
     defaultMarkup: 100,
     defaultHardware: 500,
@@ -211,9 +211,9 @@ const templates = {
     calculate: calculateLightDoor
   },
   proyeccion: {
-    name: "Ventana de proyeccion",
-    source: "Hoja Excel: ventana proyeccion",
-    note: "Usa marco ovalado, contra marco, vidrio/plastico y herrajes. El Excel duplica el subtotal como mano de obra/precio.",
+    name: "Ventana de proyección",
+    source: "Hoja Excel: ventana proyección",
+    note: "Usa marco ovalado, contra marco, vidrio/plástico y herrajes. El Excel duplica el subtotal como mano de obra/precio.",
     defaultMarkup: 100,
     defaultHardware: 700,
     includeHardwareDefault: true,
@@ -282,7 +282,7 @@ function renderPreview() {
     if (previewTotal) previewTotal.textContent = money.format(0);
     if (previewBreakdown) previewBreakdown.innerHTML = '<tr><td colspan="3">Selecciona producto y medidas.</td></tr>';
     if (previewSource) previewSource.textContent = "Basado en la plantilla seleccionada.";
-    if (templateNote) templateNote.textContent = "Selecciona un producto para ver su logica de calculo.";
+    if (templateNote) templateNote.textContent = "Selecciona un producto para ver su lógica de cálculo.";
     return;
   }
 
@@ -380,9 +380,9 @@ function buildQuoteText() {
   ));
 
   return [
-    "Cotizacion Alumglass",
+    "Cotización Alumglass",
     `Cliente: ${data.nombre || ""}`,
-    `Telefono: ${data.telefono || ""}`,
+    `Teléfono: ${data.telefono || ""}`,
     data.correo ? `Correo: ${data.correo}` : "",
     data.obra ? `Obra: ${data.obra}` : "",
     "",
@@ -431,7 +431,7 @@ function quoteDocumentHtml() {
     <html lang="es-MX">
       <head>
         <meta charset="utf-8">
-        <title>Cotizacion Alumglass</title>
+        <title>Cotización Alumglass</title>
         <style>
           * { box-sizing: border-box; }
           body {
@@ -519,17 +519,17 @@ function quoteDocumentHtml() {
           </div>
         </header>
 
-        <h1>Cotizacion</h1>
+        <h1>Cotización</h1>
         <div class="meta">
           <section class="box">
             <h2>Cliente</h2>
             <p><strong>Nombre:</strong> ${escapeHtml(data.nombre || "Sin nombre")}</p>
-            <p><strong>Telefono:</strong> ${escapeHtml(data.telefono || "Sin telefono")}</p>
+            <p><strong>Teléfono:</strong> ${escapeHtml(data.telefono || "Sin teléfono")}</p>
             <p><strong>Correo:</strong> ${escapeHtml(data.correo || "No indicado")}</p>
             <p><strong>Obra:</strong> ${escapeHtml(data.obra || "No indicada")}</p>
           </section>
           <section class="box">
-            <h2>Datos de cotizacion</h2>
+            <h2>Datos de cotización</h2>
             <p><strong>Fecha:</strong> ${escapeHtml(today)}</p>
             <p><strong>Contacto Alumglass:</strong> +52 351 313 2925</p>
             <p><strong>WhatsApp:</strong> +52 351 313 2925</p>
@@ -576,7 +576,7 @@ function downloadQuotePdf() {
   const printWindow = window.open("", "_blank");
   if (!printWindow) {
     statusNode.className = "form-status error";
-    statusNode.textContent = "El navegador bloqueo la ventana del PDF. Permite ventanas emergentes para este sitio.";
+    statusNode.textContent = "El navegador bloqueó la ventana del PDF. Permite ventanas emergentes para este sitio.";
     return;
   }
 
@@ -589,7 +589,7 @@ function downloadQuotePdf() {
   });
 
   statusNode.className = "form-status success";
-  statusNode.textContent = "Se abrio la cotizacion para guardarla como PDF.";
+  statusNode.textContent = "Se abrió la cotización para guardarla como PDF.";
 }
 
 async function copyQuote() {
@@ -605,7 +605,7 @@ async function copyQuote() {
     statusNode.textContent = "Resumen copiado al portapapeles.";
   } catch (error) {
     statusNode.className = "form-status error";
-    statusNode.textContent = "No se pudo copiar automaticamente. Selecciona el resumen manualmente.";
+    statusNode.textContent = "No se pudo copiar automáticamente. Selecciona el resumen manualmente.";
   }
 }
 
@@ -613,7 +613,7 @@ function clearQuote() {
   quoteItems.splice(0, quoteItems.length);
   renderItems();
   statusNode.className = "form-status success";
-  statusNode.textContent = "Cotizacion vaciada.";
+  statusNode.textContent = "Cotización vaciada.";
 }
 
 function prepareQuote(event) {
@@ -629,13 +629,13 @@ function prepareQuote(event) {
 
   if (!quoteItems.length) {
     statusNode.className = "form-status error";
-    statusNode.textContent = "Agrega al menos una partida a la cotizacion.";
+    statusNode.textContent = "Agrega al menos una partida a la cotización.";
     return;
   }
 
   localStorage.setItem("alumglass-last-quote", buildQuoteText());
   statusNode.className = "form-status success";
-  statusNode.textContent = "Cotizacion preparada y guardada localmente en este navegador.";
+  statusNode.textContent = "Cotización preparada y guardada localmente en este navegador.";
 }
 
 if (form && statusNode) {
