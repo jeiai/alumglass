@@ -12,8 +12,6 @@ const resetItemButton = document.querySelector("[data-reset-item]");
 const copyQuoteButton = document.querySelector("[data-copy-quote]");
 const downloadPdfButton = document.querySelector("[data-download-pdf]");
 const clearQuoteButton = document.querySelector("[data-clear-quote]");
-const previewMaterial = document.querySelector("[data-preview-material]");
-const previewLabor = document.querySelector("[data-preview-labor]");
 const previewTotal = document.querySelector("[data-preview-total]");
 const previewBreakdown = document.querySelector("[data-preview-breakdown]");
 const previewSource = document.querySelector("[data-preview-source]");
@@ -204,7 +202,7 @@ const templates = {
   puertaLigera3: {
     name: 'Puerta ligera 3"',
     source: 'Hoja Excel: puerta ligera s3"',
-    note: "Usa batiente, cerco, zoclo, duela y herrajes. El Excel duplica el subtotal como mano de obra/precio.",
+    note: "Usa batiente, cerco, zoclo, duela y herrajes. El Excel duplica el subtotal como margen/precio final.",
     defaultMarkup: 100,
     defaultHardware: 500,
     includeHardwareDefault: true,
@@ -213,7 +211,7 @@ const templates = {
   proyeccion: {
     name: "Ventana de proyección",
     source: "Hoja Excel: ventana proyección",
-    note: "Usa marco ovalado, contra marco, vidrio/plástico y herrajes. El Excel duplica el subtotal como mano de obra/precio.",
+    note: "Usa marco ovalado, contra marco, vidrio/plástico y herrajes. El Excel duplica el subtotal como margen/precio final.",
     defaultMarkup: 100,
     defaultHardware: 700,
     includeHardwareDefault: true,
@@ -277,8 +275,6 @@ function formatMeasure(line) {
 function renderPreview() {
   const result = calculateCurrent();
   if (!result) {
-    if (previewMaterial) previewMaterial.textContent = money.format(0);
-    if (previewLabor) previewLabor.textContent = money.format(0);
     if (previewTotal) previewTotal.textContent = money.format(0);
     if (previewBreakdown) previewBreakdown.innerHTML = '<tr><td colspan="3">Selecciona producto y medidas.</td></tr>';
     if (previewSource) previewSource.textContent = "Basado en la plantilla seleccionada.";
@@ -286,20 +282,16 @@ function renderPreview() {
     return;
   }
 
-  previewMaterial.textContent = money.format(result.material);
-  previewLabor.textContent = money.format(result.labor);
   previewTotal.textContent = money.format(result.total);
   previewSource.textContent = result.template.source;
   templateNote.textContent = result.template.note;
-  previewBreakdown.innerHTML = result.lines
-    .map((line) => `
-      <tr>
-        <td>${line.material}</td>
-        <td>${formatMeasure(line)}</td>
-        <td>${money.format(line.cost)}</td>
-      </tr>
-    `)
-    .join("");
+  previewBreakdown.innerHTML = `
+    <tr>
+      <td>${result.template.name}</td>
+      <td>${result.width} x ${result.height} cm, cant. ${result.quantity}</td>
+      <td><strong>${money.format(result.total)}</strong></td>
+    </tr>
+  `;
 }
 
 function renderItems() {
@@ -308,7 +300,7 @@ function renderItems() {
 
   if (!itemsTable) return;
   if (!quoteItems.length) {
-    itemsTable.innerHTML = '<tr><td colspan="6">Aun no hay partidas agregadas.</td></tr>';
+    itemsTable.innerHTML = '<tr><td colspan="5">Aun no hay partidas agregadas.</td></tr>';
     return;
   }
 
@@ -318,7 +310,6 @@ function renderItems() {
         <td><strong>${item.template.name}</strong><small>${item.notes || ""}</small></td>
         <td>${item.width} x ${item.height} cm</td>
         <td>${item.quantity}</td>
-        <td>${money.format(item.material)}</td>
         <td><strong>${money.format(item.total)}</strong></td>
         <td><button class="table-action" type="button" data-remove-item="${index}">Quitar</button></td>
       </tr>
@@ -421,8 +412,6 @@ function quoteDocumentHtml() {
       </td>
       <td>${escapeHtml(item.width)} x ${escapeHtml(item.height)} cm</td>
       <td>${escapeHtml(item.quantity)}</td>
-      <td>${money.format(item.material)}</td>
-      <td>${money.format(item.labor)}</td>
       <td><strong>${money.format(item.total)}</strong></td>
     </tr>
   `).join("");
@@ -484,9 +473,7 @@ function quoteDocumentHtml() {
             font-size: 11px;
           }
           td:nth-child(4),
-          td:nth-child(5),
-          td:nth-child(6),
-          td:nth-child(7) { text-align: right; }
+          td:nth-child(5) { text-align: right; }
           small { display: block; margin-top: 3px; color: #5d6b72; }
           .total {
             display: flex;
@@ -543,9 +530,7 @@ function quoteDocumentHtml() {
               <th>Producto</th>
               <th>Medidas</th>
               <th>Cant.</th>
-              <th>Material</th>
-              <th>Mano de obra</th>
-              <th>Total</th>
+              <th>Importe</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>

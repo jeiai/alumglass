@@ -80,7 +80,7 @@
                   <small class="field-error" data-error-for="cantidad"></small>
                 </div>
                 <div class="form-row">
-                  <label for="margen">Margen / mano de obra (%)</label>
+                  <label for="margen">Margen (%)</label>
                   <input id="margen" name="margen" type="number" min="0" step="1" value="100" required data-markup-input>
                   <small class="field-error" data-error-for="margen"></small>
                 </div>
@@ -109,17 +109,15 @@
                 <p data-preview-source>Basado en la plantilla seleccionada.</p>
               </div>
               <dl class="quote-totals">
-                <div><dt>Materiales</dt><dd data-preview-material>$0</dd></div>
-                <div><dt>Margen / mano de obra</dt><dd data-preview-labor>$0</dd></div>
-                <div><dt>Total partida</dt><dd data-preview-total>$0</dd></div>
+                <div><dt>Importe partida</dt><dd data-preview-total>$0</dd></div>
               </dl>
               <div class="breakdown-table-wrap">
                 <table class="breakdown-table">
                   <thead>
                     <tr>
-                      <th>Material</th>
-                      <th>Medida</th>
-                      <th>Total</th>
+                      <th>Concepto</th>
+                      <th>Detalle</th>
+                      <th>Importe</th>
                     </tr>
                   </thead>
                   <tbody data-preview-breakdown>
@@ -145,13 +143,12 @@
                     <th>Producto</th>
                     <th>Medidas</th>
                     <th>Cant.</th>
-                    <th>Material</th>
-                    <th>Total</th>
+                    <th>Importe</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody data-items-table>
-                  <tr><td colspan="6">Aun no hay partidas agregadas.</td></tr>
+                  <tr><td colspan="5">Aun no hay partidas agregadas.</td></tr>
                 </tbody>
               </table>
             </div>
