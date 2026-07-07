@@ -64,35 +64,50 @@
                   </select>
                   <small class="field-error" data-error-for="producto"></small>
                 </div>
-                <div class="form-row">
+                <div class="form-row form-wide" data-free-row hidden>
+                  <label for="trabajoLibre">Tipo de trabajo</label>
+                  <input id="trabajoLibre" name="trabajoLibre" type="text" placeholder="Ej. Reparación, instalación especial, ajuste" data-free-type-input>
+                  <small class="field-error" data-error-for="trabajoLibre"></small>
+                </div>
+                <div class="form-row" data-free-row hidden>
+                  <label for="medidasLibres">Medidas</label>
+                  <input id="medidasLibres" name="medidasLibres" type="text" placeholder="Ej. 120 x 90 cm" data-free-measures-input>
+                  <small class="field-error" data-error-for="medidasLibres"></small>
+                </div>
+                <div class="form-row" data-free-row hidden>
+                  <label for="montoLibre">Monto ($)</label>
+                  <input id="montoLibre" name="montoLibre" type="number" min="1" step="1" placeholder="0" data-free-amount-input>
+                  <small class="field-error" data-error-for="montoLibre"></small>
+                </div>
+                <div class="form-row" data-auto-row>
                   <label for="ancho">Ancho (cm)</label>
                   <input id="ancho" name="ancho" type="number" min="1" step="0.1" value="100" required data-width-input>
                   <small class="field-error" data-error-for="ancho"></small>
                 </div>
-                <div class="form-row">
+                <div class="form-row" data-auto-row>
                   <label for="alto">Alto (cm)</label>
                   <input id="alto" name="alto" type="number" min="1" step="0.1" value="100" required data-height-input>
                   <small class="field-error" data-error-for="alto"></small>
                 </div>
-                <div class="form-row">
+                <div class="form-row" data-auto-row>
                   <label for="cantidad">Cantidad</label>
                   <input id="cantidad" name="cantidad" type="number" min="1" step="1" value="1" required data-quantity-input>
                   <small class="field-error" data-error-for="cantidad"></small>
                 </div>
-                <div class="form-row">
+                <div class="form-row" data-auto-row>
                   <label for="margen">Margen (%)</label>
                   <input id="margen" name="margen" type="number" min="0" step="1" value="100" required data-markup-input>
                   <small class="field-error" data-error-for="margen"></small>
                 </div>
-                <div class="form-row">
+                <div class="form-row" data-auto-row>
                   <label for="herrajes">Herrajes ($)</label>
                   <input id="herrajes" name="herrajes" type="number" min="0" step="1" value="0" data-hardware-input>
                 </div>
-                <label class="check-row">
+                <label class="check-row" data-auto-row>
                   <input type="checkbox" name="incluirHerrajes" data-include-hardware>
                   <span>Incluir herrajes en esta partida</span>
                 </label>
-                <div class="form-row form-wide">
+                <div class="form-row form-wide" data-auto-row>
                   <label for="descripcion">Descripción / notas</label>
                   <textarea id="descripcion" name="descripcion" rows="3" placeholder="Color, vidrio, ubicación, detalles de instalación"></textarea>
                 </div>

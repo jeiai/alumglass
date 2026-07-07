@@ -7,6 +7,11 @@ const quantityInput = document.querySelector("[data-quantity-input]");
 const markupInput = document.querySelector("[data-markup-input]");
 const hardwareInput = document.querySelector("[data-hardware-input]");
 const includeHardwareInput = document.querySelector("[data-include-hardware]");
+const freeTypeInput = document.querySelector("[data-free-type-input]");
+const freeMeasuresInput = document.querySelector("[data-free-measures-input]");
+const freeAmountInput = document.querySelector("[data-free-amount-input]");
+const autoRows = document.querySelectorAll("[data-auto-row]");
+const freeRows = document.querySelectorAll("[data-free-row]");
 const addItemButton = document.querySelector("[data-add-item]");
 const resetItemButton = document.querySelector("[data-reset-item]");
 const copyQuoteButton = document.querySelector("[data-copy-quote]");
@@ -34,6 +39,7 @@ const messages = {
 };
 
 const quoteItems = [];
+const freeQuoteId = "cotizacionLibre";
 
 function positive(value) {
   return Math.max(Number(value) || 0, 0);
@@ -172,6 +178,12 @@ function calculateProjectionWindow({ width, height, includeHardware, hardware })
 }
 
 const templates = {
+  [freeQuoteId]: {
+    name: "Cotización libre",
+    source: "Importe manual",
+    note: "Captura el tipo de trabajo, las medidas y el monto final de la partida.",
+    isFreeQuote: true
+  },
   nacional2: {
     name: 'Ventana nacional 2"',
     source: 'Hoja Excel: nacional 2"',
@@ -238,18 +250,39 @@ function setFieldError(field) {
 
 function currentInput() {
   const template = templates[productSelect?.value];
+  const freeType = freeTypeInput?.value.trim() || "";
+  const freeMeasures = freeMeasuresInput?.value.trim() || "";
+  const freeAmount = positive(freeAmountInput?.value);
   const width = positive(widthInput?.value);
   const height = positive(heightInput?.value);
   const quantity = Math.max(parseInt(quantityInput?.value, 10) || 1, 1);
   const markup = positive(markupInput?.value);
   const includeHardware = Boolean(includeHardwareInput?.checked);
   const hardware = positive(hardwareInput?.value);
-  return { template, width, height, quantity, markup, includeHardware, hardware };
+  return { template, freeType, freeMeasures, freeAmount, width, height, quantity, markup, includeHardware, hardware };
 }
 
 function calculateCurrent() {
   const input = currentInput();
-  if (!input.template || !input.width || !input.height) return null;
+  if (!input.template) return null;
+
+  if (input.template.isFreeQuote) {
+    if (!input.freeType || !input.freeMeasures || !input.freeAmount) return null;
+    return {
+      ...input,
+      template: { ...input.template, name: input.freeType },
+      width: input.freeMeasures,
+      height: "",
+      quantity: 1,
+      lines: [],
+      material: input.freeAmount,
+      labor: 0,
+      total: input.freeAmount,
+      isFreeQuote: true
+    };
+  }
+
+  if (!input.width || !input.height) return null;
 
   const singleLines = input.template.calculate(input);
   const singleMaterial = singleLines.reduce((sum, line) => sum + line.cost, 0);
@@ -288,7 +321,7 @@ function renderPreview() {
   previewBreakdown.innerHTML = `
     <tr>
       <td>${result.template.name}</td>
-      <td>${result.width} x ${result.height} cm, cant. ${result.quantity}</td>
+      <td>${result.isFreeQuote ? result.width : `${result.width} x ${result.height} cm, cant. ${result.quantity}`}</td>
       <td><strong>${money.format(result.total)}</strong></td>
     </tr>
   `;
@@ -308,8 +341,8 @@ function renderItems() {
     .map((item, index) => `
       <tr>
         <td><strong>${item.template.name}</strong><small>${item.notes || ""}</small></td>
-        <td>${item.width} x ${item.height} cm</td>
-        <td>${item.quantity}</td>
+        <td>${item.isFreeQuote ? item.width : `${item.width} x ${item.height} cm`}</td>
+        <td>${item.isFreeQuote ? "-" : item.quantity}</td>
         <td><strong>${money.format(item.total)}</strong></td>
         <td><button class="table-action" type="button" data-remove-item="${index}">Quitar</button></td>
       </tr>
@@ -319,44 +352,92 @@ function renderItems() {
 
 function populateProducts() {
   if (!productSelect) return;
+  const freeTemplate = templates[freeQuoteId];
+  const automaticTemplates = Object.entries(templates).filter(([id]) => id !== freeQuoteId);
   productSelect.insertAdjacentHTML(
     "beforeend",
-    Object.entries(templates)
-      .map(([id, template]) => `<option value="${id}">${template.name}</option>`)
-      .join("")
+    `
+      <optgroup label="Cotización libre">
+        <option value="${freeQuoteId}">${freeTemplate.name}</option>
+      </optgroup>
+      <optgroup label="Plantillas automáticas">
+        ${automaticTemplates.map(([id, template]) => `<option value="${id}">${template.name}</option>`).join("")}
+      </optgroup>
+    `
   );
 }
 
 function applyTemplateDefaults() {
   const template = templates[productSelect?.value];
-  if (!template) return;
+  if (!template) {
+    autoRows.forEach((row) => { row.hidden = false; });
+    freeRows.forEach((row) => { row.hidden = true; });
+    [widthInput, heightInput, quantityInput, markupInput].forEach((field) => {
+      if (field) field.required = true;
+    });
+    [freeTypeInput, freeMeasuresInput, freeAmountInput].forEach((field) => {
+      if (field) field.required = false;
+    });
+    return;
+  }
+  const isFreeQuote = Boolean(template.isFreeQuote);
+  autoRows.forEach((row) => { row.hidden = isFreeQuote; });
+  freeRows.forEach((row) => { row.hidden = !isFreeQuote; });
+  [widthInput, heightInput, quantityInput, markupInput].forEach((field) => {
+    if (field) field.required = !isFreeQuote;
+  });
+  [freeTypeInput, freeMeasuresInput, freeAmountInput].forEach((field) => {
+    if (field) field.required = isFreeQuote;
+    if (!isFreeQuote) {
+      field?.setAttribute("aria-invalid", "false");
+      const error = document.querySelector(`[data-error-for="${field?.name}"]`);
+      if (error) error.textContent = "";
+    }
+  });
+  if (isFreeQuote) {
+    if (previewSource) previewSource.textContent = template.source;
+    if (templateNote) templateNote.textContent = template.note;
+    renderPreview();
+    return;
+  }
   if (markupInput) markupInput.value = template.defaultMarkup;
   if (hardwareInput) hardwareInput.value = template.defaultHardware;
   if (includeHardwareInput) includeHardwareInput.checked = template.includeHardwareDefault;
 }
 
 function resetItemForm() {
-  if (widthInput) widthInput.value = 100;
-  if (heightInput) heightInput.value = 100;
-  if (quantityInput) quantityInput.value = 1;
   const template = templates[productSelect?.value];
+  if (template?.isFreeQuote) {
+    if (freeTypeInput) freeTypeInput.value = "";
+    if (freeMeasuresInput) freeMeasuresInput.value = "";
+    if (freeAmountInput) freeAmountInput.value = "";
+  } else {
+    if (widthInput) widthInput.value = 100;
+    if (heightInput) heightInput.value = 100;
+    if (quantityInput) quantityInput.value = 1;
+  }
   if (template) applyTemplateDefaults();
   renderPreview();
 }
 
 function addCurrentItem() {
-  const requiredFields = [productSelect, widthInput, heightInput, quantityInput, markupInput].filter(Boolean);
+  const template = templates[productSelect?.value];
+  const requiredFields = template?.isFreeQuote
+    ? [productSelect, freeTypeInput, freeMeasuresInput, freeAmountInput].filter(Boolean)
+    : [productSelect, widthInput, heightInput, quantityInput, markupInput].filter(Boolean);
   const isValid = requiredFields.map(setFieldError).every(Boolean);
   const result = calculateCurrent();
   if (!isValid || !result) {
     statusNode.className = "form-status error";
-    statusNode.textContent = "Revisa producto, medidas, cantidad y margen antes de agregar.";
+    statusNode.textContent = template?.isFreeQuote
+      ? "Revisa tipo de trabajo, medidas y monto antes de agregar."
+      : "Revisa producto, medidas, cantidad y margen antes de agregar.";
     return;
   }
 
   quoteItems.push({
     ...result,
-    notes: document.querySelector("#descripcion")?.value.trim() || ""
+    notes: result.isFreeQuote ? "" : document.querySelector("#descripcion")?.value.trim() || ""
   });
   renderItems();
   statusNode.className = "form-status success";
@@ -367,7 +448,7 @@ function buildQuoteText() {
   const data = Object.fromEntries(new FormData(form).entries());
   const total = quoteItems.reduce((sum, item) => sum + item.total, 0);
   const lines = quoteItems.map((item, index) => (
-    `${index + 1}. ${item.template.name} ${item.width} x ${item.height} cm, cant. ${item.quantity}: ${money.format(item.total)}`
+    `${index + 1}. ${item.template.name} ${item.isFreeQuote ? item.width : `${item.width} x ${item.height} cm, cant. ${item.quantity}`}: ${money.format(item.total)}`
   ));
 
   return [
@@ -410,8 +491,8 @@ function quoteDocumentHtml() {
         <strong>${escapeHtml(item.template.name)}</strong>
         ${item.notes ? `<small>${escapeHtml(item.notes)}</small>` : ""}
       </td>
-      <td>${escapeHtml(item.width)} x ${escapeHtml(item.height)} cm</td>
-      <td>${escapeHtml(item.quantity)}</td>
+      <td>${escapeHtml(item.isFreeQuote ? item.width : `${item.width} x ${item.height} cm`)}</td>
+      <td>${escapeHtml(item.isFreeQuote ? "-" : item.quantity)}</td>
       <td><strong>${money.format(item.total)}</strong></td>
     </tr>
   `).join("");
